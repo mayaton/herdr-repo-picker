@@ -1,9 +1,9 @@
 use crate::ui::app::{App, AppMode};
+use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Borders, List, ListItem, Paragraph};
-use ratatui::Frame;
 
 pub fn draw(frame: &mut Frame<'_>, app: &mut App) {
     let area = frame.area();
@@ -17,7 +17,9 @@ pub fn draw(frame: &mut Frame<'_>, app: &mut App) {
                  [Enter to close]",
                 p = envrc.display()
             );
-            let block = Block::default().borders(Borders::ALL).title("direnv blocked");
+            let block = Block::default()
+                .borders(Borders::ALL)
+                .title("direnv blocked");
             frame.render_widget(Paragraph::new(text).block(block), area);
             return;
         }
@@ -39,7 +41,11 @@ pub fn draw(frame: &mut Frame<'_>, app: &mut App) {
 
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Length(3), Constraint::Min(1), Constraint::Length(1)])
+        .constraints([
+            Constraint::Length(3),
+            Constraint::Min(1),
+            Constraint::Length(1),
+        ])
         .split(area);
 
     let query_line = Line::from(vec![
@@ -47,7 +53,8 @@ pub fn draw(frame: &mut Frame<'_>, app: &mut App) {
         Span::raw(app.query().to_string()),
     ]);
     frame.render_widget(
-        Paragraph::new(query_line).block(Block::default().borders(Borders::ALL).title("Repo picker")),
+        Paragraph::new(query_line)
+            .block(Block::default().borders(Borders::ALL).title("Repo picker")),
         chunks[0],
     );
 
@@ -64,7 +71,10 @@ pub fn draw(frame: &mut Frame<'_>, app: &mut App) {
             ListItem::new(r.name.clone()).style(style)
         })
         .collect();
-    frame.render_widget(List::new(items).block(Block::default().borders(Borders::ALL)), chunks[1]);
+    frame.render_widget(
+        List::new(items).block(Block::default().borders(Borders::ALL)),
+        chunks[1],
+    );
 
     let footer = Paragraph::new("Enter pick  Esc cancel  ? help");
     frame.render_widget(footer, chunks[2]);

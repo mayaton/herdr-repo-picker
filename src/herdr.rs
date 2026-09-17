@@ -34,7 +34,9 @@ impl CliHerdrClient {
     }
 
     fn run_json(&self, args: &[&str]) -> Result<serde_json::Value> {
-        let out = Command::new(&self.bin).args(args).output()
+        let out = Command::new(&self.bin)
+            .args(args)
+            .output()
             .with_context(|| format!("failed to spawn {}", self.bin))?;
         if !out.status.success() {
             let stderr = String::from_utf8_lossy(&out.stderr);
@@ -57,7 +59,15 @@ impl HerdrClient for CliHerdrClient {
 
     fn workspace_create(&self, cwd: &Path, label: &str) -> Result<String> {
         let cwd_s = cwd.to_string_lossy().into_owned();
-        let v = self.run_json(&["workspace", "create", "--cwd", &cwd_s, "--label", label, "--focus"])?;
+        let v = self.run_json(&[
+            "workspace",
+            "create",
+            "--cwd",
+            &cwd_s,
+            "--label",
+            label,
+            "--focus",
+        ])?;
         v["result"]["workspace"]["workspace_id"]
             .as_str()
             .map(|s| s.to_string())

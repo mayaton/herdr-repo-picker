@@ -28,7 +28,11 @@ pub fn check(cwd: &Path) -> DirenvStatus {
     if !cwd.join(".envrc").exists() {
         return DirenvStatus::NoRc;
     }
-    let Ok(out) = Command::new("direnv").arg("status").current_dir(cwd).output() else {
+    let Ok(out) = Command::new("direnv")
+        .arg("status")
+        .current_dir(cwd)
+        .output()
+    else {
         return DirenvStatus::NoRc;
     };
     parse_status(&String::from_utf8_lossy(&out.stdout))

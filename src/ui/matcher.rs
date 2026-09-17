@@ -30,7 +30,11 @@ impl Matcher {
             .items
             .iter()
             .enumerate()
-            .filter_map(|(i, s)| pattern.score(s.slice(..), &mut self.inner).map(|score| (i, score)))
+            .filter_map(|(i, s)| {
+                pattern
+                    .score(s.slice(..), &mut self.inner)
+                    .map(|score| (i, score))
+            })
             .collect();
         scored.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
         scored.into_iter().map(|(i, _)| i).collect()

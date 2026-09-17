@@ -51,22 +51,36 @@ impl App {
         }
     }
 
-    pub fn query(&self) -> &str { &self.query }
-    pub fn selected(&self) -> usize { self.selected }
+    pub fn query(&self) -> &str {
+        &self.query
+    }
+    pub fn selected(&self) -> usize {
+        self.selected
+    }
 
     pub fn visible(&mut self) -> Vec<&Repo> {
-        self.visible_indices.iter().map(|&i| &self.items[i]).collect()
+        self.visible_indices
+            .iter()
+            .map(|&i| &self.items[i])
+            .collect()
     }
 
     pub fn handle(&mut self, ev: AppEvent) -> AppAction {
         match ev {
             AppEvent::Cancel => return AppAction::Exit(None),
             AppEvent::Enter => {
-                let selected_repo = self.visible_indices.get(self.selected).map(|&i| self.items[i].clone());
+                let selected_repo = self
+                    .visible_indices
+                    .get(self.selected)
+                    .map(|&i| self.items[i].clone());
                 return AppAction::Exit(selected_repo);
             }
             AppEvent::ToggleHelp => {
-                self.mode = if matches!(self.mode, AppMode::Help) { AppMode::Picking } else { AppMode::Help };
+                self.mode = if matches!(self.mode, AppMode::Help) {
+                    AppMode::Picking
+                } else {
+                    AppMode::Help
+                };
             }
             AppEvent::Char(c) => {
                 self.query.push(c);
@@ -82,10 +96,14 @@ impl App {
             }
             AppEvent::Down => {
                 let last = self.visible_indices.len().saturating_sub(1);
-                if self.selected < last { self.selected += 1; }
+                if self.selected < last {
+                    self.selected += 1;
+                }
             }
             AppEvent::Up => {
-                if self.selected > 0 { self.selected -= 1; }
+                if self.selected > 0 {
+                    self.selected -= 1;
+                }
             }
         }
         AppAction::None
@@ -139,7 +157,10 @@ mod tests {
     #[test]
     fn cancel_returns_exit_none() {
         let mut app = App::new(vec![repo("a/foo")]);
-        assert!(matches!(app.handle(AppEvent::Cancel), AppAction::Exit(None)));
+        assert!(matches!(
+            app.handle(AppEvent::Cancel),
+            AppAction::Exit(None)
+        ));
     }
 
     #[test]
@@ -171,7 +192,11 @@ mod tests {
         let mut app = App::new(vec![repo("a/foo"), repo("a/bar")]);
         app.handle(AppEvent::Down);
         app.handle(AppEvent::Char('f'));
-        let vis: Vec<_> = app.visible().into_iter().map(|r| r.tab_name.clone()).collect();
+        let vis: Vec<_> = app
+            .visible()
+            .into_iter()
+            .map(|r| r.tab_name.clone())
+            .collect();
         assert_eq!(vis, vec!["foo".to_string()]);
         assert_eq!(app.selected(), 0);
     }

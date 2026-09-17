@@ -1,16 +1,18 @@
 use anyhow::Result;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use crossterm::execute;
-use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
+use crossterm::terminal::{
+    EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode,
+};
 use herdr_repo_picker::config::Config;
 use herdr_repo_picker::direnv;
-use herdr_repo_picker::dispatch::{dispatch, DispatchOutcome};
+use herdr_repo_picker::dispatch::{DispatchOutcome, dispatch};
 use herdr_repo_picker::herdr::CliHerdrClient;
 use herdr_repo_picker::repo::{CommandLister, Lister};
 use herdr_repo_picker::ui::app::{App, AppAction, AppEvent, AppMode};
 use herdr_repo_picker::ui::render::draw;
-use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
+use ratatui::backend::CrosstermBackend;
 use std::io;
 use std::path::PathBuf;
 
@@ -23,7 +25,9 @@ fn config_path() -> Option<PathBuf> {
 }
 
 fn main() -> Result<()> {
-    let config = config_path().map(|p| Config::load(&p)).unwrap_or_else(Config::defaults);
+    let config = config_path()
+        .map(|p| Config::load(&p))
+        .unwrap_or_else(Config::defaults);
 
     let lister = CommandLister {
         list_command: config.list_command.clone(),
@@ -38,14 +42,22 @@ fn main() -> Result<()> {
     let mut app = App::new(repos);
     let picked = run_picker(&mut app)?;
 
-    let Some(repo) = picked else { return Ok(()); };
+    let Some(repo) = picked else {
+        return Ok(());
+    };
 
-    let direnv_status = if config.direnv_guard { direnv::check(&repo.path) } else { direnv::DirenvStatus::NoRc };
+    let direnv_status = if config.direnv_guard {
+        direnv::check(&repo.path)
+    } else {
+        direnv::DirenvStatus::NoRc
+    };
     let client = CliHerdrClient::from_env();
     let outcome = dispatch(&repo, &config, &client, direnv_status)?;
 
     if let DispatchOutcome::BlockedByDirenv(envrc) = &outcome {
-        app.mode = AppMode::DirenvBlocked { envrc: envrc.clone() };
+        app.mode = AppMode::DirenvBlocked {
+            envrc: envrc.clone(),
+        };
         run_blocking_screen(&mut app)?;
     }
     Ok(())
@@ -61,10 +73,10 @@ fn run_picker(app: &mut App) -> Result<Option<herdr_repo_picker::repo::Repo>> {
             Event::Key(k) if k.kind == KeyEventKind::Press => translate(k),
             _ => None,
         };
-        if let Some(ev) = ev {
-            if let AppAction::Exit(picked) = app.handle(ev) {
-                return Ok(picked);
-            }
+        if let Some(ev) = ev
+            && let AppAction::Exit(picked) = app.handle(ev)
+        {
+            return Ok(picked);
         }
     }
 }
@@ -77,7 +89,8 @@ fn run_blocking_screen(app: &mut App) -> Result<()> {
         terminal.draw(|f| draw(f, app))?;
         if let Event::Key(k) = event::read()? {
             let esc_or_enter = matches!(k.code, KeyCode::Enter | KeyCode::Esc);
-            let ctrl_c = matches!(k.code, KeyCode::Char('c')) && k.modifiers.contains(KeyModifiers::CONTROL);
+            let ctrl_c =
+                matches!(k.code, KeyCode::Char('c')) && k.modifiers.contains(KeyModifiers::CONTROL);
             if esc_or_enter || ctrl_c {
                 return Ok(());
             }

@@ -1,4 +1,4 @@
-use herdr_repo_picker::direnv::{parse_status, DirenvStatus};
+use herdr_repo_picker::direnv::{DirenvStatus, parse_status};
 
 #[test]
 fn no_rc_when_output_lacks_found_rc_path() {
