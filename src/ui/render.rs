@@ -58,23 +58,26 @@ pub fn draw(frame: &mut Frame<'_>, app: &mut App) {
         chunks[0],
     );
 
+    let list_block = Block::default().borders(Borders::ALL);
+    let inner_area = list_block.inner(chunks[1]);
+    app.set_list_area(inner_area);
+    app.set_list_height(inner_area.height as usize);
+
     let selected = app.selected();
+    let scroll_offset = app.scroll_offset();
     let items: Vec<ListItem> = app
-        .visible()
+        .visible_page()
         .iter()
         .enumerate()
         .map(|(i, r)| {
             let mut style = Style::default();
-            if i == selected {
+            if scroll_offset + i == selected {
                 style = style.add_modifier(Modifier::REVERSED);
             }
             ListItem::new(r.name.clone()).style(style)
         })
         .collect();
-    frame.render_widget(
-        List::new(items).block(Block::default().borders(Borders::ALL)),
-        chunks[1],
-    );
+    frame.render_widget(List::new(items).block(list_block), chunks[1]);
 
     let footer = Paragraph::new("Enter pick  Esc cancel  ? help");
     frame.render_widget(footer, chunks[2]);
