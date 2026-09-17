@@ -1,6 +1,6 @@
 id = "herdr-repo-picker"
 name = "herdr-repo-picker"
-version = "0.1.1"
+version = "0.2.0"
 description = "A herdr plugin that opens a popup pane to pick a ghq repository and jump to its workspace."
 min_herdr_version = "0.7.4"
 platforms = ["linux", "macos"]

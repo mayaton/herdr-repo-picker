@@ -27,11 +27,20 @@ Run `herdr plugin config-dir herdr-repo-picker` to find the config directory, th
 ## Behavior
 
 1. The bound key opens a centered popup pane.
-2. Fuzzy-search and select a ghq repository.
-3. On Enter:
+2. Fuzzy-search and select a ghq repository, with the keyboard or the mouse.
+3. On Enter (or double-click):
    - If a workspace with the same name already exists, it is focused.
    - Otherwise a new workspace is created and `claude` is launched in its initial pane (override via `launch_command`).
 4. If the target repository has an unallowed `.envrc`, the launch is blocked.
+
+### Mouse support
+
+- Left-click a repository row to move the selection to it (like arrow keys).
+- Double-click a row within 500ms to pick it (like Enter).
+- Scroll the wheel to move the selection up/down one row at a time.
+- Clicking outside the popup is not handled: it depends on whether the host
+  herdr popup pane forwards outside clicks as terminal mouse events, which is
+  unverified.
 
 ## Manual E2E checklist
 
@@ -41,6 +50,9 @@ Run `herdr plugin config-dir herdr-repo-picker` to find the config directory, th
 - [ ] Picking the same repository again focuses the existing workspace
 - [ ] Picking a repository with an unallowed `.envrc` shows the direnv guard screen and blocks the launch
 - [ ] Esc / Ctrl-c closes the popup
+- [ ] Left-click a row moves the selection without picking it
+- [ ] Double-click a row picks it, same as Enter
+- [ ] Scrolling the mouse wheel moves the selection and scrolls the list when it overflows the visible area
 
 ## Development
 
