@@ -19,6 +19,10 @@ pub enum AppEvent {
     Enter,
     Cancel,
     ToggleHelp,
+    Click(usize),
+    DoubleClick(usize),
+    WheelUp,
+    WheelDown,
 }
 
 pub enum AppAction {
@@ -94,16 +98,31 @@ impl App {
                 self.query.clear();
                 self.refilter();
             }
-            AppEvent::Down => {
+            AppEvent::Down | AppEvent::WheelDown => {
                 let last = self.visible_indices.len().saturating_sub(1);
                 if self.selected < last {
                     self.selected += 1;
                 }
             }
-            AppEvent::Up => {
+            AppEvent::Up | AppEvent::WheelUp => {
                 if self.selected > 0 {
                     self.selected -= 1;
                 }
+            }
+            AppEvent::Click(row) => {
+                if row < self.visible_indices.len() {
+                    self.selected = row;
+                }
+            }
+            AppEvent::DoubleClick(row) => {
+                if row < self.visible_indices.len() {
+                    self.selected = row;
+                }
+                let selected_repo = self
+                    .visible_indices
+                    .get(self.selected)
+                    .map(|&i| self.items[i].clone());
+                return AppAction::Exit(selected_repo);
             }
         }
         AppAction::None
@@ -199,5 +218,42 @@ mod tests {
             .collect();
         assert_eq!(vis, vec!["foo".to_string()]);
         assert_eq!(app.selected(), 0);
+    }
+
+    #[test]
+    fn wheel_events_move_selection_like_up_down() {
+        let mut app = App::new(vec![repo("a/foo"), repo("a/bar")]);
+        app.handle(AppEvent::WheelDown);
+        assert_eq!(app.selected(), 1);
+        app.handle(AppEvent::WheelDown);
+        assert_eq!(app.selected(), 1);
+        app.handle(AppEvent::WheelUp);
+        assert_eq!(app.selected(), 0);
+        app.handle(AppEvent::WheelUp);
+        assert_eq!(app.selected(), 0);
+    }
+
+    #[test]
+    fn click_sets_selection_without_exiting() {
+        let mut app = App::new(vec![repo("a/foo"), repo("a/bar"), repo("a/baz")]);
+        let action = app.handle(AppEvent::Click(2));
+        assert!(matches!(action, AppAction::None));
+        assert_eq!(app.selected(), 2);
+    }
+
+    #[test]
+    fn click_out_of_range_is_ignored() {
+        let mut app = App::new(vec![repo("a/foo")]);
+        app.handle(AppEvent::Click(5));
+        assert_eq!(app.selected(), 0);
+    }
+
+    #[test]
+    fn double_click_selects_and_exits_with_repo() {
+        let mut app = App::new(vec![repo("a/foo"), repo("a/bar")]);
+        match app.handle(AppEvent::DoubleClick(1)) {
+            AppAction::Exit(Some(r)) => assert_eq!(r.tab_name, "bar"),
+            _ => panic!("expected Exit(Some(bar))"),
+        }
     }
 }
