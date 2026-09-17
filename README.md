@@ -1,10 +1,10 @@
 # herdr-repo-picker
 
-A herdr plugin that opens an overlay pane to fuzzy-search ghq repositories and jump to the matching workspace.
+A herdr plugin that opens a centered popup pane to fuzzy-search ghq repositories and jump to the matching workspace.
 
 ## Dependencies
 
-- herdr (>= 0.7.0)
+- herdr (>= 0.7.4, for `placement = "popup"` support)
 - ghq
 - Rust 1.96+ (only needed to build from source)
 - Claude Code CLI (used as the default `launch_command`)
@@ -26,7 +26,7 @@ Run `herdr plugin config-dir herdr-repo-picker` to find the config directory, th
 
 ## Behavior
 
-1. The bound key opens an overlay pane.
+1. The bound key opens a centered popup pane.
 2. Fuzzy-search and select a ghq repository.
 3. On Enter:
    - If a workspace with the same name already exists, it is focused.
@@ -35,12 +35,12 @@ Run `herdr plugin config-dir herdr-repo-picker` to find the config directory, th
 
 ## Manual E2E checklist
 
-- [ ] The overlay opens via the bound key/prefix
+- [ ] The popup opens via the bound key/prefix
 - [ ] Typing ~3 characters narrows the list via fuzzy search
 - [ ] Enter creates a new workspace and launches `claude` in its initial pane
 - [ ] Picking the same repository again focuses the existing workspace
 - [ ] Picking a repository with an unallowed `.envrc` shows the direnv guard screen and blocks the launch
-- [ ] Esc / Ctrl-c closes the overlay
+- [ ] Esc / Ctrl-c closes the popup
 
 ## Development
 

@@ -1,8 +1,8 @@
 id = "herdr-repo-picker"
 name = "herdr-repo-picker"
 version = "0.1.0"
-description = "A herdr plugin that opens an overlay pane to pick a ghq repository and jump to its workspace."
-min_herdr_version = "0.7.0"
+description = "A herdr plugin that opens a popup pane to pick a ghq repository and jump to its workspace."
+min_herdr_version = "0.7.4"
 platforms = ["linux", "macos"]
 
 [[build]]
@@ -12,12 +12,14 @@ command = ["/bin/sh", "scripts/fetch-or-build.sh"]
 [[panes]]
 id = "picker"
 title = "Repo picker"
-placement = "overlay"
+placement = "popup"
+width = "60%"
+height = "60%"
 command = ["./target/release/herdr-repo-picker"]
 
 [[actions]]
 id = "open-picker"
 platforms = ["linux", "macos"]
 title = "Open repo picker"
-description = "Show the ghq repository picker as a floating overlay pane."
-command = ["bash", "scripts/open-overlay.sh"]
+description = "Show the ghq repository picker as a centered popup pane."
+command = ["bash", "scripts/open-picker.sh"]
