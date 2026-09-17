@@ -1,0 +1,28 @@
+# Example configuration for herdr-repo-picker.
+#
+# Location:
+#   When installed as a herdr plugin: $HERDR_PLUGIN_CONFIG_DIR/config.toml
+#   Run `herdr plugin config-dir herdr-repo-picker` to find the actual path.
+#
+# All keys are commented out below. Uncomment to override.
+# A missing file, malformed TOML, or a wrong-typed value all fall back to
+# defaults (per key where possible).
+
+# Command that lists repositories. Each line of stdout is treated as a path
+# relative to `root_command`'s output.
+#list_command = ["ghq", "list"]
+
+# Command that resolves the root used to turn the relative paths from
+# `list_command` into absolute paths.
+#root_command = ["ghq", "root"]
+
+# Command run in the initial pane when a new workspace is created for the
+# selected repository. Set to an empty array to leave the shell idle instead.
+#launch_command = ["claude"]
+
+# Block launching a workspace when an unallowed .envrc is detected.
+#direnv_guard = true
+
+# Number of `git log` preview lines. Not implemented yet in v0.1 (the key is
+# only parsed and stored).
+#preview_lines = 10
