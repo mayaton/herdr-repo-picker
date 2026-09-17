@@ -39,7 +39,7 @@ jobs:
           mkdir -p dist
           cp target/${{ matrix.target }}/release/herdr-repo-picker dist/
           (cd dist && tar czf ${NAME}.tar.gz herdr-repo-picker && shasum -a 256 ${NAME}.tar.gz > ${NAME}.tar.gz.sha256)
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: |
             dist/*.tar.gz
